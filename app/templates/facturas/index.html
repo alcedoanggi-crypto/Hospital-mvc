@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Facturacion{% endblock %}
+{% block page_title %}Facturacion{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h5 class="fw-bold m-0">Facturas</h5>
+    <small class="text-muted">Pendiente de cobro: <strong>S/ {{ '%.2f'|format(total_pendiente) }}</strong></small>
+  </div>
+  <a href="{{ url_for('facturas.crear') }}" class="btn btn-brand"><i class="bi bi-plus-lg"></i> Nueva factura</a>
+</div>
+<div class="btn-group btn-group-sm mb-3">
+  <a href="{{ url_for('facturas.index') }}" class="btn btn-outline-secondary {{ 'active' if not estado }}">Todas</a>
+  {% for e in estados %}
+  <a href="{{ url_for('facturas.index', estado=e) }}" class="btn btn-outline-secondary {{ 'active' if estado == e }}">{{ e|capitalize }}</a>
+  {% endfor %}
+</div>
+<div class="card-soft p-0">
+  <table class="table table-hover align-middle m-0">
+    <thead class="table-light"><tr><th>Numero</th><th>Fecha</th><th>Paciente</th><th>Total</th><th>Metodo</th><th>Estado</th><th></th></tr></thead>
+    <tbody>
+      {% for f in facturas %}
+      <tr>
+        <td><code>{{ f.numero }}</code></td>
+        <td>{{ f.fecha.strftime('%d/%m/%Y') }}</td>
+        <td class="fw-semibold">{{ f.paciente.nombre_completo }}</td>
+        <td>S/ {{ '%.2f'|format(f.total) }}</td>
+        <td>{{ f.metodo_pago or '-' }}</td>
+        <td><span class="badge badge-estado bg-{{ f.estado }}">{{ f.estado }}</span></td>
+        <td class="text-end"><a href="{{ url_for('facturas.detalle', fid=f.id) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a></td>
+      </tr>
+      {% else %}<tr><td colspan="7" class="text-center text-muted py-4">Sin facturas.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

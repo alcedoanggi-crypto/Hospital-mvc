@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Examenes{% endblock %}
+{% block page_title %}Examenes medicos{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="fw-bold m-0">Ordenes de examen</h5>
+  {% if current_user.rol in ['administrador','medico'] %}
+  <a href="{{ url_for('examenes.crear') }}" class="btn btn-brand"><i class="bi bi-plus-lg"></i> Solicitar examen</a>
+  {% endif %}
+</div>
+<div class="btn-group btn-group-sm mb-3">
+  <a href="{{ url_for('examenes.index') }}" class="btn btn-outline-secondary {{ 'active' if not estado }}">Todos</a>
+  {% for e in estados %}
+  <a href="{{ url_for('examenes.index', estado=e) }}" class="btn btn-outline-secondary {{ 'active' if estado == e }}">{{ e|replace('_',' ')|capitalize }}</a>
+  {% endfor %}
+</div>
+<div class="card-soft p-0">
+  <table class="table table-hover align-middle m-0">
+    <thead class="table-light"><tr><th>Solicitado</th><th>Paciente</th><th>Tipo</th><th>Medico</th><th>Estado</th><th></th></tr></thead>
+    <tbody>
+      {% for x in examenes %}
+      <tr>
+        <td>{{ x.fecha_solicitud.strftime('%d/%m/%Y') }}</td>
+        <td class="fw-semibold">{{ x.paciente.nombre_completo }}</td>
+        <td>{{ x.tipo }}</td>
+        <td>{{ x.medico.nombre_completo }}</td>
+        <td><span class="badge badge-estado bg-{{ x.estado }}">{{ x.estado|replace('_',' ') }}</span></td>
+        <td class="text-end">{% if current_user.rol in ['administrador','medico'] %}
+          <a href="{{ url_for('examenes.resultado', eid=x.id) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-clipboard-check"></i> Resultado</a>
+        {% endif %}</td>
+      </tr>
+      {% else %}<tr><td colspan="6" class="text-center text-muted py-4">Sin examenes.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

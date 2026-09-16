@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Clinica Vida{% endblock %}
+{% block page_title %}Panel de control{% endblock %}
+
+{% block head_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div id="pulse-loader">
+  <div>
+    <div style="font-size:3rem" class="heartbeat"><i class="bi bi-heart-pulse-fill"></i></div>
+    <div class="lbl">Cargando sistema vivo...</div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-3">
+    <div class="kpi accent-celeste">
+      <div class="kpi-icon"><i class="bi bi-calendar2-check"></i></div>
+      <div class="kpi-label">Citas de hoy</div>
+      <div class="kpi-value">{{ kpis.citas_hoy }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="kpi accent-verde">
+      <div class="kpi-icon"><i class="bi bi-person-plus"></i></div>
+      <div class="kpi-label">Pacientes nuevos (30d)</div>
+      <div class="kpi-value">{{ kpis.pacientes_nuevos }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="kpi accent-verde">
+      <div class="kpi-icon"><i class="bi bi-cash-coin"></i></div>
+      <div class="kpi-label">Ingresos (30d)</div>
+      <div class="kpi-value">S/ {{ '%.2f'|format(kpis.ingresos_mes) }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="kpi accent-gris">
+      <div class="kpi-icon"><i class="bi bi-hourglass-split"></i></div>
+      <div class="kpi-label">Citas pendientes</div>
+      <div class="kpi-value">{{ kpis.citas_pendientes }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card-soft p-3 h-100">
+      <h6 class="fw-bold mb-3"><i class="bi bi-bar-chart-line text-primary"></i> Citas atendidas vs canceladas</h6>
+      <div style="position:relative; height:280px; width:100%">
+        <canvas id="chartCitas"></canvas>
+        <div id="chartCitas-empty" class="chart-empty d-none">
+          <i class="bi bi-calendar2-x"></i>
+          <p>Aun no hay citas registradas en los ultimos meses.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-soft p-3 h-100">
+      <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart text-primary"></i> Especialidades mas demandadas</h6>
+      <div style="position:relative; height:280px; width:100%">
+        <canvas id="chartEspecialidades"></canvas>
+        <div id="chartEspecialidades-empty" class="chart-empty d-none">
+          <i class="bi bi-pie-chart"></i>
+          <p>Aun no hay citas asociadas a especialidades.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card-soft p-3 h-100">
+      <h6 class="fw-bold mb-3"><i class="bi bi-graph-up-arrow text-success"></i> Ingresos por consultas</h6>
+      <div style="position:relative; height:260px; width:100%">
+        <canvas id="chartIngresos"></canvas>
+        <div id="chartIngresos-empty" class="chart-empty d-none">
+          <i class="bi bi-cash-coin"></i>
+          <p>Aun no hay facturas pagadas registradas.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-soft p-3 h-100">
+      <h6 class="fw-bold mb-3"><i class="bi bi-bell text-warning"></i> Proximas citas</h6>
+      <ul class="list-group list-group-flush">
+        {% for c in proximas %}
+        <li class="list-group-item d-flex justify-content-between align-items-start px-0">
+          <div>
+            <div class="fw-semibold">{{ c.paciente.nombre_completo }}</div>
+            <small class="text-muted">{{ c.medico.nombre_completo }} · {{ c.motivo or 'Consulta' }}</small>
+          </div>
+          <span class="badge text-bg-light">{{ c.fecha_hora.strftime('%d/%m %H:%M') }}</span>
+        </li>
+        {% else %}
+        <li class="list-group-item px-0 border-0">
+          <div class="list-empty">
+            <i class="bi bi-calendar2-heart"></i>
+            <p>No hay citas proximas programadas.</p>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Nueva factura{% endblock %}
+{% block page_title %}Generar factura{% endblock %}
+{% block content %}
+<form method="post" class="card-soft p-4" style="max-width:820px">
+  <div class="row g-3">
+    <div class="col-md-5"><label class="form-label">Paciente *</label>
+      <select name="paciente_id" class="form-select" required>
+        <option value="">Selecciona...</option>
+        {% for p in pacientes %}<option value="{{ p.id }}">{{ p.nombre_completo }} ({{ p.dni }})</option>{% endfor %}
+      </select></div>
+    <div class="col-md-4"><label class="form-label">Cita asociada</label>
+      <select name="cita_id" class="form-select">
+        <option value="">(ninguna)</option>
+        {% for c in citas %}<option value="{{ c.id }}">#{{ c.id }} {{ c.paciente.nombre_completo }} - {{ c.fecha_hora.strftime('%d/%m %H:%M') }}</option>{% endfor %}
+      </select></div>
+    <div class="col-md-3"><label class="form-label">Estado</label>
+      <select name="estado" class="form-select">
+        {% for e in estados %}<option value="{{ e }}">{{ e|capitalize }}</option>{% endfor %}
+      </select></div>
+  </div>
+
+  <h6 class="fw-bold mt-4">Conceptos</h6>
+  <table class="table" id="tabla-det">
+    <thead><tr><th>Concepto</th><th>Cantidad</th><th>Precio (S/)</th><th></th></tr></thead>
+    <tbody>
+      <tr>
+        <td><input name="concepto" class="form-control" required></td>
+        <td><input name="cantidad" type="number" min="1" value="1" class="form-control"></td>
+        <td><input name="precio" type="number" step="0.01" min="0" value="0" class="form-control"></td>
+        <td><button type="button" class="btn btn-outline-danger btn-sm quitar">&times;</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <button type="button" class="btn btn-outline-primary btn-sm" id="add-det"><i class="bi bi-plus"></i> Agregar concepto</button>
+
+  <div class="mt-3"><label class="form-label">Metodo de pago</label>
+    <select name="metodo_pago" class="form-select" style="max-width:240px">
+      <option value="">-</option>
+      <option value="efectivo">Efectivo</option>
+      <option value="tarjeta">Tarjeta</option>
+      <option value="transferencia">Transferencia</option>
+      <option value="seguro">Seguro medico</option>
+    </select></div>
+
+  <p class="text-muted small mt-2">El subtotal, IGV (18%) y total se calculan automaticamente.</p>
+  <div class="mt-3"><button class="btn btn-brand">Generar factura</button>
+    <a href="{{ url_for('facturas.index') }}" class="btn btn-link">Cancelar</a></div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('add-det').addEventListener('click', function () {
+  var tbody = document.querySelector('#tabla-det tbody');
+  var tr = tbody.rows[0].cloneNode(true);
+  tr.querySelectorAll('input').forEach(function (i, idx) { i.value = idx === 1 ? '1' : (idx === 2 ? '0' : ''); });
+  tbody.appendChild(tr);
+});
+document.querySelector('#tabla-det').addEventListener('click', function (e) {
+  if (e.target.classList.contains('quitar')) {
+    var tbody = document.querySelector('#tabla-det tbody');
+    if (tbody.rows.length > 1) e.target.closest('tr').remove();
+  }
+});
+</script>
+{% endblock %}

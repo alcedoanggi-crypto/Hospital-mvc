@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}No encontrado{% endblock %}
+{% block page_title %}No encontrado{% endblock %}
+{% block content %}
+<div class="card-soft p-5 text-center">
+  <div style="font-size:3rem" class="text-primary"><i class="bi bi-compass"></i></div>
+  <h4 class="fw-bold mt-2">Pagina no encontrada</h4>
+  <p class="text-muted">El recurso solicitado no existe o fue movido.</p>
+  <div><a href="{{ url_for('dashboard.index') }}" class="btn btn-brand">Volver al dashboard</a></div>
+</div>
+{% endblock %}
+{% block content_public %}
+<div class="p-5 text-center"><h4>404</h4><a href="{{ url_for('auth.login') }}">Ir al login</a></div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ paciente.nombre_completo }}{% endblock %}
+{% block page_title %}Ficha del paciente{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <h4 class="fw-bold m-0">{{ paciente.nombre_completo }}</h4>
+    <span class="text-muted">DNI {{ paciente.dni }}</span>
+  </div>
+  <div>
+    {% if current_user.rol in ['administrador','recepcionista'] %}
+    <a href="{{ url_for('pacientes.editar', pid=paciente.id) }}" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i> Editar</a>
+    {% endif %}
+    <a href="{{ url_for('historiales.por_paciente', pid=paciente.id) }}" class="btn btn-brand"><i class="bi bi-file-medical"></i> Historial clinico</a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card-soft p-3">
+      <h6 class="fw-bold">Datos</h6>
+      <dl class="row small mb-0">
+        <dt class="col-5">Nacimiento</dt><dd class="col-7">{{ paciente.fecha_nacimiento or '-' }}</dd>
+        <dt class="col-5">Sexo</dt><dd class="col-7">{{ paciente.sexo or '-' }}</dd>
+        <dt class="col-5">Telefono</dt><dd class="col-7">{{ paciente.telefono or '-' }}</dd>
+        <dt class="col-5">Correo</dt><dd class="col-7">{{ paciente.email or '-' }}</dd>
+        <dt class="col-5">Tipo sangre</dt><dd class="col-7">{{ paciente.tipo_sangre or '-' }}</dd>
+        <dt class="col-5">Direccion</dt><dd class="col-7">{{ paciente.direccion or '-' }}</dd>
+      </dl>
+    </div>
+    <div class="card-soft p-3 mt-3 border-warning">
+      <h6 class="fw-bold text-warning"><i class="bi bi-exclamation-triangle"></i> Alergias</h6>
+      <p class="mb-0">{{ paciente.alergias or 'Ninguna registrada' }}</p>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="card-soft p-3">
+      <h6 class="fw-bold">Citas recientes</h6>
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Fecha</th><th>Medico</th><th>Motivo</th><th>Estado</th></tr></thead>
+        <tbody>
+          {% for c in paciente.citas|sort(attribute='fecha_hora', reverse=true) %}
+          <tr>
+            <td>{{ c.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>{{ c.medico.nombre_completo }}</td>
+            <td>{{ c.motivo or '-' }}</td>
+            <td><span class="badge badge-estado bg-{{ c.estado }}">{{ c.estado }}</span></td>
+          </tr>
+          {% else %}<tr><td colspan="4" class="text-muted">Sin citas.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="card-soft p-3 mt-3">
+      <h6 class="fw-bold">Facturas</h6>
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Numero</th><th>Fecha</th><th>Total</th><th>Estado</th></tr></thead>
+        <tbody>
+          {% for f in paciente.facturas|sort(attribute='fecha', reverse=true) %}
+          <tr><td>{{ f.numero }}</td><td>{{ f.fecha.strftime('%d/%m/%Y') }}</td>
+            <td>S/ {{ '%.2f'|format(f.total) }}</td>
+            <td><span class="badge badge-estado bg-{{ f.estado }}">{{ f.estado }}</span></td></tr>
+          {% else %}<tr><td colspan="4" class="text-muted">Sin facturas.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

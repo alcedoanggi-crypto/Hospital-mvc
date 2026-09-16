@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Cita #{{ cita.id }}{% endblock %}
+{% block page_title %}Detalle de la cita{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="card-soft p-4">
+      <div class="d-flex justify-content-between">
+        <h5 class="fw-bold">Cita #{{ cita.id }}</h5>
+        <span class="badge badge-estado bg-{{ cita.estado }} align-self-start">{{ cita.estado|replace('_',' ') }}</span>
+      </div>
+      <dl class="row mt-2">
+        <dt class="col-4">Paciente</dt><dd class="col-8">{{ cita.paciente.nombre_completo }} ({{ cita.paciente.dni }})</dd>
+        <dt class="col-4">Medico</dt><dd class="col-8">{{ cita.medico.nombre_completo }}</dd>
+        <dt class="col-4">Especialidad</dt><dd class="col-8">{{ cita.medico.especialidad.nombre }}</dd>
+        <dt class="col-4">Fecha / hora</dt><dd class="col-8">{{ cita.fecha_hora.strftime('%d/%m/%Y %H:%M') }} ({{ cita.duracion_min }} min)</dd>
+        <dt class="col-4">Motivo</dt><dd class="col-8">{{ cita.motivo or '-' }}</dd>
+        <dt class="col-4">Notas</dt><dd class="col-8">{{ cita.notas or '-' }}</dd>
+      </dl>
+      <a href="{{ url_for('citas.editar', cid=cita.id) }}" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i> Editar</a>
+      {% if current_user.rol in ['administrador','medico'] and not cita.historial %}
+      <a href="{{ url_for('historiales.crear', paciente_id=cita.paciente_id, cita_id=cita.id) }}" class="btn btn-salud"><i class="bi bi-file-medical"></i> Registrar atencion</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card-soft p-4">
+      <h6 class="fw-bold">Cambiar estado</h6>
+      <form method="post" action="{{ url_for('citas.cambiar_estado', cid=cita.id) }}" class="d-flex gap-2">
+        <select name="estado" class="form-select">
+          <option value="programada">Programada</option>
+          <option value="atendida">Atendida</option>
+          <option value="cancelada">Cancelada</option>
+          <option value="no_asistio">No asistio</option>
+        </select>
+        <button class="btn btn-brand">Aplicar</button>
+      </form>
+      {% if cita.historial %}
+      <hr>
+      <p class="mb-1 small text-muted">Atencion registrada</p>
+      <a href="{{ url_for('historiales.detalle', hid=cita.historial.id) }}">Ver historial clinico</a>
+      {% endif %}
+      {% if cita.factura %}
+      <hr>
+      <p class="mb-1 small text-muted">Facturacion</p>
+      <a href="{{ url_for('facturas.detalle', fid=cita.factura.id) }}">Ver factura {{ cita.factura.numero }}</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

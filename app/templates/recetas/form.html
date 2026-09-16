@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Nueva receta{% endblock %}
+{% block page_title %}Emitir receta medica{% endblock %}
+{% block content %}
+<form method="post" class="card-soft p-4" style="max-width:860px">
+  <input type="hidden" name="historial_id" value="{{ r.historial_id or '' }}">
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Paciente *</label>
+      <select name="paciente_id" class="form-select" required>
+        <option value="">Selecciona...</option>
+        {% for p in pacientes %}
+        <option value="{{ p.id }}" {{ 'selected' if historial and historial.paciente_id == p.id }}>{{ p.nombre_completo }} ({{ p.dni }})</option>
+        {% endfor %}
+      </select></div>
+    <div class="col-md-6"><label class="form-label">Medico *</label>
+      <select name="medico_id" class="form-select" required>
+        <option value="">Selecciona...</option>
+        {% for m in medicos %}
+        <option value="{{ m.id }}" {{ 'selected' if historial and historial.medico_id == m.id }}>{{ m.nombre_completo }}</option>
+        {% endfor %}
+      </select></div>
+    <div class="col-12"><label class="form-label">Diagnostico</label>
+      <input name="diagnostico" class="form-control" value="{{ historial.diagnostico if historial else '' }}"></div>
+  </div>
+
+  <h6 class="fw-bold mt-4">Medicamentos</h6>
+  <table class="table" id="tabla-med">
+    <thead><tr><th>Medicamento</th><th>Dosis</th><th>Frecuencia</th><th>Duracion</th><th></th></tr></thead>
+    <tbody>
+      <tr>
+        <td><input name="med_nombre" class="form-control" required></td>
+        <td><input name="med_dosis" class="form-control"></td>
+        <td><input name="med_frecuencia" class="form-control"></td>
+        <td><input name="med_duracion" class="form-control"></td>
+        <td><button type="button" class="btn btn-outline-danger btn-sm quitar">&times;</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <button type="button" class="btn btn-outline-primary btn-sm" id="add-med"><i class="bi bi-plus"></i> Agregar medicamento</button>
+
+  <div class="mt-3"><label class="form-label">Indicaciones generales</label>
+    <textarea name="indicaciones" class="form-control" rows="3"></textarea></div>
+
+  <div class="mt-4"><button class="btn btn-salud"><i class="bi bi-capsule"></i> Emitir receta</button></div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('add-med').addEventListener('click', function () {
+  var tbody = document.querySelector('#tabla-med tbody');
+  var tr = tbody.rows[0].cloneNode(true);
+  tr.querySelectorAll('input').forEach(function (i) { i.value = ''; });
+  tbody.appendChild(tr);
+});
+document.querySelector('#tabla-med').addEventListener('click', function (e) {
+  if (e.target.classList.contains('quitar')) {
+    var tbody = document.querySelector('#tabla-med tbody');
+    if (tbody.rows.length > 1) e.target.closest('tr').remove();
+  }
+});
+</script>
+{% endblock %}

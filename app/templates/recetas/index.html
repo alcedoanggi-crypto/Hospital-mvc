@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Recetas{% endblock %}
+{% block page_title %}Recetas medicas{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="fw-bold m-0">Recetas emitidas</h5>
+  {% if current_user.rol in ['administrador','medico'] %}
+  <a href="{{ url_for('recetas.crear') }}" class="btn btn-brand"><i class="bi bi-plus-lg"></i> Nueva receta</a>
+  {% endif %}
+</div>
+<div class="card-soft p-0">
+  <table class="table table-hover align-middle m-0">
+    <thead class="table-light"><tr><th>#</th><th>Fecha</th><th>Paciente</th><th>Medico</th><th>Medicamentos</th><th></th></tr></thead>
+    <tbody>
+      {% for r in recetas %}
+      <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.fecha.strftime('%d/%m/%Y') }}</td>
+        <td class="fw-semibold">{{ r.paciente.nombre_completo }}</td>
+        <td>{{ r.medico.nombre_completo }}</td>
+        <td>{{ r.medicamentos|length }}</td>
+        <td class="text-end">
+          <a href="{{ url_for('recetas.detalle', rid=r.id) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+          <a href="{{ url_for('recetas.descargar_pdf', rid=r.id) }}" class="btn btn-sm btn-outline-danger"><i class="bi bi-file-earmark-pdf"></i></a>
+        </td>
+      </tr>
+      {% else %}<tr><td colspan="6" class="text-center text-muted py-4">Sin recetas.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

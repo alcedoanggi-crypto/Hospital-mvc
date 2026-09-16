@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Agenda medica{% endblock %}
+{% block page_title %}Agenda medica{% endblock %}
+{% block head_extra %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex gap-3 small">
+    <span><i class="bi bi-circle-fill" style="color:#38BDF8"></i> Programada</span>
+    <span><i class="bi bi-circle-fill" style="color:#22C55E"></i> Atendida</span>
+    <span><i class="bi bi-circle-fill" style="color:#94A3B8"></i> Cancelada</span>
+    <span><i class="bi bi-circle-fill" style="color:#F97316"></i> No asistio</span>
+  </div>
+  <a href="{{ url_for('citas.crear') }}" class="btn btn-brand"><i class="bi bi-plus-lg"></i> Nueva cita</a>
+</div>
+<div class="card-soft p-3">
+  <div id="calendar"></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var el = document.getElementById('calendar');
+  var cal = new FullCalendar.Calendar(el, {
+    initialView: 'timeGridWeek',
+    locale: 'es',
+    slotMinTime: '07:00:00',
+    slotMaxTime: '21:00:00',
+    nowIndicator: true,
+    headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
+    buttonText: { today: 'Hoy', month: 'Mes', week: 'Semana', day: 'Dia' },
+    events: '/api/citas',
+    eventClick: function (info) {
+      if (info.event.url) { info.jsEvent.preventDefault(); window.location = info.event.url; }
+    },
+    dateClick: function (info) {
+      window.location = "{{ url_for('citas.crear') }}";
+    }
+  });
+  cal.render();
+});
+</script>
+{% endblock %}

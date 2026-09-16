@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Factura {{ f.numero }}{% endblock %}
+{% block page_title %}Factura {{ f.numero }}{% endblock %}
+{% block content %}
+<div class="card-soft p-4" style="max-width:640px">
+  <div class="d-flex justify-content-between">
+    <h5 class="fw-bold">{{ f.numero }}</h5>
+    <span class="badge badge-estado bg-{{ f.estado }} align-self-start">{{ f.estado }}</span>
+  </div>
+  <p class="text-muted">{{ f.fecha.strftime('%d/%m/%Y %H:%M') }} · {{ f.paciente.nombre_completo }}</p>
+  <table class="table table-sm">
+    <thead><tr><th>Concepto</th><th class="text-end">Cant.</th><th class="text-end">Precio</th><th class="text-end">Subtotal</th></tr></thead>
+    <tbody>
+      {% for it in f.detalle %}
+      <tr>
+        <td>{{ it.concepto }}</td>
+        <td class="text-end">{{ it.cantidad }}</td>
+        <td class="text-end">S/ {{ '%.2f'|format(it.precio) }}</td>
+        <td class="text-end">S/ {{ '%.2f'|format(it.precio * it.cantidad) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="3" class="text-end">Subtotal</td><td class="text-end">S/ {{ '%.2f'|format(f.subtotal) }}</td></tr>
+      <tr><td colspan="3" class="text-end">IGV (18%)</td><td class="text-end">S/ {{ '%.2f'|format(f.impuesto) }}</td></tr>
+      <tr class="fw-bold"><td colspan="3" class="text-end">Total</td><td class="text-end">S/ {{ '%.2f'|format(f.total) }}</td></tr>
+    </tfoot>
+  </table>
+  {% if f.estado == 'pendiente' %}
+  <form method="post" action="{{ url_for('facturas.pagar', fid=f.id) }}" class="d-flex gap-2">
+    <select name="metodo_pago" class="form-select">
+      <option value="efectivo">Efectivo</option>
+      <option value="tarjeta">Tarjeta</option>
+      <option value="transferencia">Transferencia</option>
+      <option value="seguro">Seguro medico</option>
+    </select>
+    <button class="btn btn-salud">Marcar pagada</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

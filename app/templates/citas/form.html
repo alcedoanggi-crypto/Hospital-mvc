@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Editar' if modo == 'editar' else 'Nueva' }} cita{% endblock %}
+{% block page_title %}{{ 'Editar' if modo == 'editar' else 'Nueva' }} cita{% endblock %}
+{% block content %}
+<form method="post" class="card-soft p-4" style="max-width:720px">
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Paciente *</label>
+      <select name="paciente_id" class="form-select" required>
+        <option value="">Selecciona...</option>
+        {% for p in pacientes %}
+        <option value="{{ p.id }}" {{ 'selected' if cita.paciente_id == p.id }}>{{ p.nombre_completo }} ({{ p.dni }})</option>
+        {% endfor %}
+      </select></div>
+    <div class="col-md-6"><label class="form-label">Medico *</label>
+      <select name="medico_id" class="form-select" required>
+        <option value="">Selecciona...</option>
+        {% for m in medicos %}
+        <option value="{{ m.id }}" {{ 'selected' if cita.medico_id == m.id }}>{{ m.nombre_completo }} - {{ m.especialidad.nombre }}</option>
+        {% endfor %}
+      </select></div>
+    <div class="col-md-4"><label class="form-label">Fecha y hora *</label>
+      <input type="datetime-local" name="fecha_hora" class="form-control" required
+             value="{{ cita.fecha_hora.strftime('%Y-%m-%dT%H:%M') if cita.fecha_hora else '' }}"></div>
+    <div class="col-md-4"><label class="form-label">Duracion (min)</label>
+      <input type="number" name="duracion_min" class="form-control" value="{{ cita.duracion_min or 30 }}"></div>
+    <div class="col-md-4"><label class="form-label">Estado</label>
+      <select name="estado" class="form-select">
+        {% for e in estados %}
+        <option value="{{ e }}" {{ 'selected' if cita.estado == e or (not cita.estado and e == 'programada') }}>{{ e|replace('_',' ')|capitalize }}</option>
+        {% endfor %}
+      </select></div>
+    <div class="col-12"><label class="form-label">Motivo</label>
+      <input name="motivo" class="form-control" value="{{ cita.motivo or '' }}"></div>
+    <div class="col-12"><label class="form-label">Notas</label>
+      <textarea name="notas" class="form-control" rows="2">{{ cita.notas or '' }}</textarea></div>
+  </div>
+  <div class="mt-4"><button class="btn btn-brand">Guardar</button>
+    <a href="{{ url_for('citas.index') }}" class="btn btn-link">Cancelar</a></div>
+</form>
+{% endblock %}

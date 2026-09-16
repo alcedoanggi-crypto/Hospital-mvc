@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Editar' if modo == 'editar' else 'Nueva' }} especialidad{% endblock %}
+{% block page_title %}{{ 'Editar' if modo == 'editar' else 'Nueva' }} especialidad{% endblock %}
+{% block content %}
+<form method="post" class="card-soft p-4" style="max-width:560px">
+  <div class="mb-3"><label class="form-label">Nombre *</label>
+    <input name="nombre" class="form-control" value="{{ esp.nombre or '' }}" required></div>
+  <div class="mb-3"><label class="form-label">Descripcion</label>
+    <textarea name="descripcion" class="form-control" rows="2">{{ esp.descripcion or '' }}</textarea></div>
+  <div class="mb-3"><label class="form-label">Precio de consulta (S/)</label>
+    <input type="number" step="0.01" min="0" name="precio_consulta" class="form-control"
+           value="{{ esp.precio_consulta or 0 }}"></div>
+  <button class="btn btn-brand">Guardar</button>
+  <a href="{{ url_for('especialidades.index') }}" class="btn btn-link">Cancelar</a>
+</form>
+{% endblock %}

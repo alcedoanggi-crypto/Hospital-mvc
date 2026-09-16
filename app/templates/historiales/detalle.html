@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Historial #{{ h.id }}{% endblock %}
+{% block page_title %}Entrada de historial clinico{% endblock %}
+{% block content %}
+<div class="card-soft p-4" style="max-width:820px">
+  <div class="d-flex justify-content-between">
+    <h5 class="fw-bold">{{ h.paciente.nombre_completo }}</h5>
+    <span class="badge text-bg-light">{{ h.fecha.strftime('%d/%m/%Y %H:%M') }}</span>
+  </div>
+  <p class="text-muted">{{ h.medico.nombre_completo }} · {{ h.medico.especialidad.nombre }}</p>
+  <dl class="row">
+    <dt class="col-3">Motivo</dt><dd class="col-9">{{ h.motivo_consulta or '-' }}</dd>
+    <dt class="col-3">Diagnostico</dt><dd class="col-9">{{ h.diagnostico }}</dd>
+    <dt class="col-3">Tratamiento</dt><dd class="col-9">{{ h.tratamiento or '-' }}</dd>
+    <dt class="col-3">Observaciones</dt><dd class="col-9">{{ h.observaciones or '-' }}</dd>
+    <dt class="col-3">Alergias</dt><dd class="col-9">{{ h.alergias or '-' }}</dd>
+  </dl>
+  <hr>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('historiales.por_paciente', pid=h.paciente_id) }}" class="btn btn-link">Volver al historial</a>
+    {% if current_user.rol in ['administrador','medico'] %}
+    <a href="{{ url_for('recetas.crear', historial_id=h.id) }}" class="btn btn-salud"><i class="bi bi-capsule"></i> Emitir receta</a>
+    {% endif %}
+  </div>
+
+  {% if h.recetas %}
+  <h6 class="fw-bold mt-3">Recetas asociadas</h6>
+  <ul>
+    {% for r in h.recetas %}
+    <li><a href="{{ url_for('recetas.detalle', rid=r.id) }}">Receta #{{ r.id }}</a> — {{ r.medicamentos|length }} medicamento(s)</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endblock %}

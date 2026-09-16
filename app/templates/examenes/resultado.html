@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Resultado de examen{% endblock %}
+{% block page_title %}Resultado de examen{% endblock %}
+{% block content %}
+<form method="post" class="card-soft p-4" style="max-width:680px">
+  <dl class="row">
+    <dt class="col-4">Paciente</dt><dd class="col-8">{{ e.paciente.nombre_completo }}</dd>
+    <dt class="col-4">Tipo</dt><dd class="col-8">{{ e.tipo }}</dd>
+    <dt class="col-4">Solicitado</dt><dd class="col-8">{{ e.fecha_solicitud.strftime('%d/%m/%Y') }}</dd>
+  </dl>
+  <div class="mb-3"><label class="form-label">Estado</label>
+    <select name="estado" class="form-select">
+      {% for s in estados %}<option value="{{ s }}" {{ 'selected' if e.estado == s }}>{{ s|replace('_',' ')|capitalize }}</option>{% endfor %}
+    </select></div>
+  <div class="mb-3"><label class="form-label">Resultado</label>
+    <textarea name="resultado" class="form-control" rows="5">{{ e.resultado or '' }}</textarea></div>
+  <button class="btn btn-brand">Guardar</button>
+  <a href="{{ url_for('examenes.index') }}" class="btn btn-link">Volver</a>
+</form>
+{% endblock %}

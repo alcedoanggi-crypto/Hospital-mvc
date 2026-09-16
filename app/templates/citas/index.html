@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Citas{% endblock %}
+{% block page_title %}Citas medicas{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="fw-bold m-0">Listado de citas</h5>
+  <div>
+    <a href="{{ url_for('citas.agenda') }}" class="btn btn-outline-primary"><i class="bi bi-calendar3"></i> Agenda</a>
+    <a href="{{ url_for('citas.crear') }}" class="btn btn-brand"><i class="bi bi-plus-lg"></i> Nueva cita</a>
+  </div>
+</div>
+
+<form class="mb-3" method="get">
+  <div class="btn-group btn-group-sm">
+    <a href="{{ url_for('citas.index') }}" class="btn btn-outline-secondary {{ 'active' if not estado }}">Todas</a>
+    {% for e in estados %}
+    <a href="{{ url_for('citas.index', estado=e) }}" class="btn btn-outline-secondary {{ 'active' if estado == e }}">{{ e|replace('_',' ')|capitalize }}</a>
+    {% endfor %}
+  </div>
+</form>
+
+<div class="card-soft p-0">
+  <table class="table table-hover align-middle m-0">
+    <thead class="table-light"><tr><th>Fecha / hora</th><th>Paciente</th><th>Medico</th><th>Motivo</th><th>Estado</th><th></th></tr></thead>
+    <tbody>
+      {% for c in citas %}
+      <tr>
+        <td>{{ c.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td class="fw-semibold">{{ c.paciente.nombre_completo }}</td>
+        <td>{{ c.medico.nombre_completo }}</td>
+        <td>{{ c.motivo or '-' }}</td>
+        <td><span class="badge badge-estado bg-{{ c.estado }}">{{ c.estado|replace('_',' ') }}</span></td>
+        <td class="text-end"><a href="{{ url_for('citas.detalle', cid=c.id) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a></td>
+      </tr>
+      {% else %}<tr><td colspan="6" class="text-center text-muted py-4">Sin citas.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

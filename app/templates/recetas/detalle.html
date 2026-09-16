@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Receta #{{ r.id }}{% endblock %}
+{% block page_title %}Receta medica digital{% endblock %}
+{% block content %}
+<div class="card-soft p-4" style="max-width:760px">
+  <div class="d-flex justify-content-between align-items-start">
+    <div>
+      <h5 class="fw-bold mb-0">Receta #{{ r.id }}</h5>
+      <span class="text-muted">{{ r.fecha.strftime('%d/%m/%Y %H:%M') }}</span>
+    </div>
+    <a href="{{ url_for('recetas.descargar_pdf', rid=r.id) }}" class="btn btn-outline-danger"><i class="bi bi-file-earmark-pdf"></i> Descargar PDF</a>
+  </div>
+  <hr>
+  <dl class="row">
+    <dt class="col-3">Paciente</dt><dd class="col-9">{{ r.paciente.nombre_completo }} ({{ r.paciente.dni }})</dd>
+    <dt class="col-3">Medico</dt><dd class="col-9">{{ r.medico.nombre_completo }} · CMP {{ r.medico.colegiatura }}</dd>
+    <dt class="col-3">Diagnostico</dt><dd class="col-9">{{ r.diagnostico or '-' }}</dd>
+  </dl>
+  <h6 class="fw-bold">Medicamentos</h6>
+  <table class="table table-sm">
+    <thead><tr><th>Medicamento</th><th>Dosis</th><th>Frecuencia</th><th>Duracion</th></tr></thead>
+    <tbody>
+      {% for m in r.medicamentos %}
+      <tr><td>{{ m.medicamento }}</td><td>{{ m.dosis }}</td><td>{{ m.frecuencia }}</td><td>{{ m.duracion }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if r.indicaciones %}<h6 class="fw-bold">Indicaciones</h6><p style="white-space:pre-line">{{ r.indicaciones }}</p>{% endif %}
+</div>
+{% endblock %}
